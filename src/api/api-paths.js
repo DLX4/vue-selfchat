@@ -8,11 +8,11 @@ let apiPaths = {
     }
   },
   chat: {
-    getChatList: chat_server + "/chat/getChatList",
-    getChatItemByOpenId: chat_server + "/chat/getChatItemByOpenId",
-    getRecordsByOpenId: chat_server + "/chat/getRecordsByOpenId",
+    getTopicList: chat_server + "/topic",
+    // getChatItemByOpenId: chat_server + "/chat/getChatItemByOpenId",
+    getRecordsByTopicId: chat_server + "/message",
     setRead: chat_server + '/chat/setRead',
-    send: chat_server + "/chat/send",
+    send: chat_server + "/message",
     // 发送图片消息
     sendImage: chat_server + "/chat/sendImage",
   }

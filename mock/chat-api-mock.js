@@ -160,7 +160,7 @@ let sendImageRs = {
     sendType: "SEND",
     "createTime|1543800000-1543851602": 1, //时间
     msgType: "image",
-    msgName: "图片消息",
+    msgName: "图片  消息",
     isEvent: false,
     picUrl: "@dataImage('100x100', '图片类型示例')",
     srcUrl: "@dataImage('100x100', '图片类型示例')"
@@ -173,21 +173,23 @@ Mock.mock(RegExp(ApiPaths.chat.getChatList + ".*"), options => {
   let data = [];
   list.data.forEach(d => data[d.openId] = d);
   list.data = Object.values(data);
+  console.debug(list)
   return list;
 });
 
 Mock.mock(RegExp(ApiPaths.chat.getRecordsByOpenId + ".*"), options => {
-  console.debug(ApiPaths.chat.getRecordsByOpenId, options);
+  //console.debug(ApiPaths.chat.getRecordsByOpenId, options);
   let openId = options.url.substring(options.url.indexOf("openId=") + 7)
   let result = Mock.mock(msgs);
   result.data.forEach(d => {
     d.openId = openId;
   });
+  //console.debug(result)
   return result;
 });
 
 Mock.mock(ApiPaths.chat.setRead, options => {
-  console.debug(ApiPaths.chat.setRead, options);
+  //console.debug(ApiPaths.chat.setRead, options);
   return Mock.mock({
     code: 0
   })
@@ -197,6 +199,7 @@ Mock.mock(RegExp(ApiPaths.chat.getChatItemByOpenId + ".*"), options => {
   console.debug(ApiPaths.chat.getChatItemByOpenId, options);
   let item = JSON.parse(JSON.stringify(chatItem));
   item.openId = /sisf|dsdf|anb2|sss4|safs4|sd22|bbas|sss/;
+  console.debug(item)
   return Mock.mock({
     code: 0,
     data: item
@@ -204,7 +207,7 @@ Mock.mock(RegExp(ApiPaths.chat.getChatItemByOpenId + ".*"), options => {
 })
 
 Mock.mock(RegExp(ApiPaths.chat.sendImage + ".*"), options => {
-  console.debug(ApiPaths.chat.sendImage, options);
+  //console.debug(ApiPaths.chat.sendImage, options);
   // 此请求的url类似：127.0.0.1:8013/chat/sendImage?appId=11&openId=open10
   let body = qs.parse(options.url.split("?")[1]);
   let rs = Mock.mock(sendImageRs);
@@ -227,7 +230,7 @@ Mock.mock(RegExp(ApiPaths.chat.sendImage + ".*"), options => {
 
 Mock.mock(RegExp(ApiPaths.chat.send + ".*"), options => {
   let body = qs.parse(options.body);
-  console.debug(ApiPaths.chat.send, body);
+  //console.debug(ApiPaths.chat.send, body);
   let rs = Mock.mock(sendMsg);
   rs.data.openId = body.openId;
   rs.data.content = body.content;
@@ -241,7 +244,7 @@ function toBase64(file, cb) {
   // 最大限制在2M以内
   const MAX_SIZE = 2 << 20;
   if (file) {
-    //将文件以Data URL形式读入页面  
+    //将文件以Data URL形式读入页面
     reader.readAsDataURL(file);
     reader.onload = function(e) {
       if (MAX_SIZE < reader.result.length) {

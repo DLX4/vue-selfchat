@@ -22,8 +22,8 @@ const state = {
   selectId: 1,
   // 与当前选中好友的聊天记录
   selectedMsgs: [],
-  online: false,
-  onlineState: "离线",
+  online: true,
+  // onlineState: "离线",
   // 输入内容的草稿
   drafts: {},
   inputContent: ""
@@ -46,16 +46,16 @@ const mutations = {
   selectSession(state, value) {
     state.selectId = value;
   },
-  setReachable(state, v) {
-    state.reachable = v;
-  },
-  reachableChange(state, msg) {
-    console.log("收到用户可达性变更事件", msg);
-    let chatItem = state.chatlist.find(c => c.openId === msg.openId);
-    if (chatItem) {
-      chatItem.reachable = msg.reachable;
-    }
-  },
+  // setReachable(state, v) {
+  //   state.reachable = v;
+  // },
+  // reachableChange(state, msg) {
+  //   console.log("收到用户可达性变更事件", msg);
+  //   let chatItem = state.chatlist.find(c => c.openId === msg.openId);
+  //   if (chatItem) {
+  //     chatItem.reachable = msg.reachable;
+  //   }
+  // },
   addNewChatItem(state, item) {
     if (!state.chatlist.find(c => c.openId === item.openId)) {
       state.chatlist.unshift(item);
@@ -108,12 +108,6 @@ const mutations = {
     state.chatlist.splice(index, 1);
     state.chatlist.unshift(item);
   },
-  setOnline(state, v) {
-    state.online = v;
-  },
-  setOnlineState(state, v) {
-    state.onlineState = v;
-  },
   setInputContent(state, c) {
     state.inputContent = c;
   },
@@ -126,34 +120,12 @@ const getters = {
   searchedChatlist(state) {
     return state.chatlist.filter(item =>
       item.displayName &&
-      item.reachable == state.reachable &&
+      // item.reachable == state.reachable &&
       item.displayName.includes(state.searchText));
   },
   // 通过当前选择是哪个对话匹配相应的对话
   selectedChat(state) {
     return state.chatlist.find(item => item.openId === state.selectId);
-  },
-  allReachable() {
-    let allReachable = {};
-    state.chatlist.forEach(list => {
-      allReachable[list.openId] = list.reachable;
-    })
-    return allReachable;
-  },
-  unreadNum() {
-    let reachable = 0;
-    let unreachable = 0;
-    state.chatlist.forEach(list => {
-      if (list.reachable) {
-        reachable += list.unreadNum;
-      } else {
-        unreachable += list.unreadNum;
-      }
-    });
-    return {
-      reachable,
-      unreachable
-    }
   }
 }
 
@@ -179,22 +151,14 @@ const actions = {
   send: ({
     commit
   }) => commit('send'),
-  setReachable: ({
-    commit,
-    dispatch
-  }, v) => {
-    commit("setReachable", v);
-    if (state.chatlist.length) {
-      dispatch("setDefaultSelect");
-    }
-  },
+
   setDefaultSelect({
     state,
     dispatch,
     commit
   }) {
     // 设置默认选中第一个
-    let item = state.chatlist.find(item => item.reachable === state.reachable);
+    let item = state.chatlist[0];
     if (item) {
       dispatch('selectSession', item.openId)
     } else {
@@ -205,137 +169,14 @@ const actions = {
   initData: ({
     commit,
     dispatch
-  }) => {
-    WsApi.connect(() => {
-      commit("setOnlineState", "连接中...");
-    }, () => {
-      elVue.$notify({
-        title: '成功',
-        message: '服务器连接成功',
-        type: 'success'
-      });
-      ChatApi.getChatList().then(list => {
-        commit('initData', list);
-        elVue.$nextTick(() => {
-          dispatch("setDefaultSelect");
-        });
-      });
-      commit("setOnline", true);
-      commit("setOnlineState", "在线");
-    }, () => {
-      elVue.$notify({
-        title: '警告',
-        message: '与服务器连接断开',
-        type: 'warning'
-      });
-      commit("setOnline", false);
-      commit("setOnlineState", "离线");
-    });
-    WsApi.subNewMsg((msg) => dispatch("handleNewMsg", msg));
-    WsApi.subReachableChange((msg) => commit("reachableChange", msg));
-  },
-  // 处理收到websocket推送的新消息
-  handleNewMsg({
-    state,
-    commit,
-    dispatch
-  }, msg) {
-    if (!msg || !msg.msgId) {
-      console.log("无效消息：", msg);
-      return;
-    }
-    console.log("收到新消息：", msg);
-    if (state.selectId === msg.openId) {
-      // 新消息发送人是当前正在对话的人
-      // 添加新记录并更新聊天列表项
-      commit("addNewMsg", msg);
-      commit("updateChatItem", msg);
-      ChatApi.setRead(msg.openId);
-    } else {
-      // 接收到的消息对应的人
-      let chatItem = state.chatlist.find(c => c.openId === msg.openId);
-      // 提示的消息内容
-      let content = msg.content;
-      if (msg.msgType !== "text") {
-        content = `[${msg.msgName}]`;
-      }
-      if (chatItem) {
-        // 该用户已在聊天列表中
-        // 更新列表
-        commit("updateChatItem", msg);
-        // 如果是收到的消息则通知
-        msg.sendType === "REC" && dispatch("notifyNewMsg", {
-          displayName: chatItem.displayName,
-          openId: msg.openId,
-          content: content
-        })
-      } else {
-        console.debug("不在chatlist中, openId: " + msg.openId, state.chatlist);
-        // 该用户不在聊天列表中
-        // 获取这个用户的聊天记录并添加到列表中
-        ChatApi.getChatItemByOpenId(msg.openId)
-          .then((item) => {
-            // 添加用户并通知
-            commit("addNewChatItem", item);
-            // 如果是收到的消息则通知
-            msg.sendType === "REC" && dispatch("notifyNewMsg", {
-              displayName: item.displayName,
-              openId: msg.openId,
-              content: content
-            })
-          })
-          .catch(e => {
-            console.log('处理新消息查询用户信息出错', e);
-            elVue.$alert('处理新消息查询用户信息出错')
-          });
-      }
-    }
-  },
-  notifyNewMsg({
-    dispatch
-  }, item) {
-    // 先清除缓存，以便加载最新的
-    ChatApi.cleanCache(item.openId);
-    if (!Notification) {
-      // 是接收到的，而且不是当前正在聊天的
-      elVue.$notify({
-        title: "新消息：" + item.displayName,
-        message: item.content,
-        position: 'bottom-right',
-        onClick() {
-          dispatch("selectSession", item.openId);
-        }
-      });
-      return;
-    }
-    Notification.requestPermission(function(p) {
-      if (p === "granted") {
-        let title = "新消息：" + item.displayName;
-        let notify = new Notification(title, {
-          body: item.content,
-          tag: item.openId
-        });
-        notify.onclick = function() {
-          //可直接打开通知notification相关联的tab窗口
-          window.focus();
-          dispatch("selectSession", item.openId);
-        }
-        setTimeout(() => {
-          notify.close();
-        }, 10000);
-      } else {
-        // 是接收到的，而且不是当前正在聊天的
-        elVue.$notify({
-          title: "新消息：" + item.displayName,
-          message: item.content,
-          position: 'bottom-right',
-          onClick() {
-            dispatch("selectSession", item.openId);
-          }
-        });
-      }
+  }) =>   {
+    console.log("-------------")
+    ChatApi.getTopicList().then(rsp => {
+      console.log(rsp)
+      commit("initData", rsp.content);
     })
   },
+
   initChatHistory({
     commit,
   }, id) {
