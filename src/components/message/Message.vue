@@ -4,7 +4,7 @@
     <header class="header">
       <el-row :gutter="20">
         <el-col :span="18">
-          <div class="friendname">{{selectedChat && selectedChat.displayName || "_"}}</div>
+          <div class="friendname">{{selectedChat && selectedChat.name || "_"}}</div>
         </el-col>
         <el-col :span="6"
                 style="text-align: right">
@@ -114,7 +114,7 @@ export default {
       let first = this.selectedMsgs[0];
       let firstCreateTime = first && first.createTime;
       this.loading = true;
-      ChatApi.getRecordsByOpenId(this.selectId, firstCreateTime)
+      ChatApi.getRecordsByTopicId(this.selectTopicId, firstCreateTime)
         .then(rs => {
           if (rs && rs.length) {
             // 保存加载前的高度
@@ -154,7 +154,7 @@ export default {
   },
   computed: {
     ...mapGetters(["selectedChat", "allReachable"]),
-    ...mapState(["user", "selectedMsgs", "online", "onlineState", "selectId"])
+    ...mapState(["user", "selectedMsgs", "online", "onlineState", "selectTopicId"])
   },
   watch: {
     // 发送信息后,让信息滚动到最下面

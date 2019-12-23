@@ -160,7 +160,7 @@ export default {
         let msg = {
           appId: this.selectedChat.appId,
           content: toOriginEmoji(this.content),
-          openId: this.selectId,
+          openId: this.selectTopicId,
           sendType: "SEND",
           msgType: "text",
           date: new Date()
@@ -175,7 +175,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["selectId", "reachable", "online", "inputContent"]),
+    ...mapState(["selectTopicId", "reachable", "online", "inputContent"]),
     ...mapGetters(["selectedChat"]),
     content: {
       get() {
@@ -207,7 +207,7 @@ export default {
   },
   watch: {
     // 在选择其它对话的时候 聚焦输入框
-    selectId() {
+    selectTopicId() {
       setTimeout(() => {
         this.$refs.text.focus();
       }, 0);

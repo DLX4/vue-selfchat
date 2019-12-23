@@ -19,7 +19,7 @@ const state = {
   // 对话好友列表
   chatlist: [],
   // 得知当前选择的是哪个对话
-  selectId: 1,
+  selectTopicId: 1,
   // 与当前选中好友的聊天记录
   selectedMsgs: [],
   online: true,
@@ -33,6 +33,8 @@ const mutations = {
   // 从localStorage 中获取数据
   initData(state, chatlistData) {
     state.chatlist = chatlistData;
+    console.log("===========")
+    console.log(state.chatlist)
   },
   // 当前选中的联系人对应的聊天记录
   setSelectedMsgs(state, msg) {
@@ -44,7 +46,7 @@ const mutations = {
   },
   // 得知用户当前选择的是哪个对话。便于匹配对应的对话框
   selectSession(state, value) {
-    state.selectId = value;
+    state.selectTopicId = value;
   },
   // setReachable(state, v) {
   //   state.reachable = v;
@@ -56,14 +58,14 @@ const mutations = {
   //     chatItem.reachable = msg.reachable;
   //   }
   // },
-  addNewChatItem(state, item) {
-    if (!state.chatlist.find(c => c.openId === item.openId)) {
-      state.chatlist.unshift(item);
-    }
-  },
+  // addNewChatItem(state, item) {
+  //   if (!state.chatlist.find(c => c.openId === item.openId)) {
+  //     state.chatlist.unshift(item);
+  //   }
+  // },
   // 给当前会话添加新消息
   addNewMsg(state, msg) {
-    if (state.selectId !== msg.openId) {
+    if (state.selectTopicId !== msg.topicId) {
       return;
     }
     if (msg.createTime && !(msg.createTime instanceof Date)) {
@@ -75,7 +77,7 @@ const mutations = {
       }
     }
     state.selectedMsgs.push(msg);
-    CacheUtil.setWithTime("msgs:" + state.selectId, state.selectedMsgs);
+    CacheUtil.setWithTime("msgs:" + state.selectTopicId, state.selectedMsgs);
   },
   loadMoreNewMsg(state, msgs) {
     // 将新加载的消息加到消息的头部
@@ -87,7 +89,7 @@ const mutations = {
     let item;
     for (let i = 0; i < state.chatlist.length; i++) {
       let tmp = state.chatlist[i];
-      if (tmp.openId === msg.openId) {
+      if (tmp.topicId === msg.topicId) {
         index = i;
         item = tmp;
         break;
@@ -100,11 +102,11 @@ const mutations = {
     if (msg.msgType !== "text") {
       item.lastMsgContent = msg.msgName;;
     }
-    item.lastMsgDate = msg.createTime;
-    // 如果不是当前选中的人，则未读数量加一
-    if (msg.sendType === "REC" && state.selectId !== msg.openId) {
-      item.unreadNum++;
-    }
+    item.lastMsgTime = msg.createTime;
+    // // 如果不是当前选中的人，则未读数量加一
+    // if (msg.sendType === "REC" && state.selectTopicId !== msg.openId) {
+    //   item.unreadNum++;
+    // }
     state.chatlist.splice(index, 1);
     state.chatlist.unshift(item);
   },
@@ -119,13 +121,13 @@ const getters = {
   // 筛选出含有搜索值的聊天列表
   searchedChatlist(state) {
     return state.chatlist.filter(item =>
-      item.displayName &&
+      item.name &&
       // item.reachable == state.reachable &&
-      item.displayName.includes(state.searchText));
+      item.name.includes(state.searchText));
   },
   // 通过当前选择是哪个对话匹配相应的对话
   selectedChat(state) {
-    return state.chatlist.find(item => item.openId === state.selectId);
+    return state.chatlist.find(item => item.topicId === state.selectTopicId);
   }
 }
 
@@ -142,10 +144,11 @@ const actions = {
   }, value) => {
     commit('selectSession', value);
     if (value) {
-      ChatApi.setRead(value).then(() => {
-        let item = state.chatlist.find(item => item.openId === value);
-        item && (item.unreadNum = 0);
-      }).catch(e => elVue.$alert(e || "置为已读出错"));
+      let item = state.chatlist.find(item => item.openId === value);
+      // item && (item.unreadNum = 0);
+      // ChatApi.setRead(value).then(() => {
+      //
+      // }).catch(e => elVue.$alert(e || "置为已读出错"));
     }
   },
   send: ({
@@ -160,7 +163,7 @@ const actions = {
     // 设置默认选中第一个
     let item = state.chatlist[0];
     if (item) {
-      dispatch('selectSession', item.openId)
+      dispatch('selectSession', item.topicId)
     } else {
       commit("setSelectedMsgs", []);
       dispatch('selectSession', "");
@@ -171,9 +174,9 @@ const actions = {
     dispatch
   }) =>   {
     console.log("-------------")
-    ChatApi.getTopicList().then(rsp => {
-      console.log(rsp)
-      commit("initData", rsp.content);
+    ChatApi.getTopicList().then(list => {
+      console.log(list)
+      commit("initData", list);
     })
   },
 
@@ -183,7 +186,7 @@ const actions = {
     if (!id) {
       return;
     }
-    ChatApi.getRecordsByOpenId(id).then(msgs => {
+    ChatApi.getRecordsByTopicId(id).then(msgs => {
       commit("setSelectedMsgs", msgs);
     }).catch(e => {
       console.log(e);
@@ -198,7 +201,7 @@ const store = new Vuex.Store({
 })
 
 store.watch(
-  (state) => state.selectId,
+  (state) => state.selectTopicId,
   (val, old) => {
     store.commit("addDraft", {
       openId: old,

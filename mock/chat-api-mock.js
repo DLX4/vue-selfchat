@@ -7,7 +7,7 @@ import {
 let chatItem = {
   appId: "11",
   openId: "open@integer(1, 30)",
-  displayName: '@cname',
+  name: '@cname',
   avatar: "@dataImage('42x42', '客')",
   reachable: "@Boolean",
   "unreadNum|0-3": 1,
@@ -177,8 +177,8 @@ Mock.mock(RegExp(ApiPaths.chat.getChatList + ".*"), options => {
   return list;
 });
 
-Mock.mock(RegExp(ApiPaths.chat.getRecordsByOpenId + ".*"), options => {
-  //console.debug(ApiPaths.chat.getRecordsByOpenId, options);
+Mock.mock(RegExp(ApiPaths.chat.getRecordsByTopicId + ".*"), options => {
+  //console.debug(ApiPaths.chat.getRecordsByTopicId, options);
   let openId = options.url.substring(options.url.indexOf("openId=") + 7)
   let result = Mock.mock(msgs);
   result.data.forEach(d => {

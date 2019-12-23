@@ -13,20 +13,23 @@ function getTopicList() {
     console.log(ApiPaths.chat.getTopicList)
     HttpUtil.get(ApiPaths.chat.getTopicList)
       .then((rs) => {
-        if (rs.code >= 0) {
-          if (!rs.data.length) {
+        console.log(rs);
+        if (rs.requestResult) {
+          if (!rs.content.length) {
             res([]);
           } else {
-            let sortedData = rs.data.sort((a, b) => {
-              if (a.lastMsgDate == b.lastMsgDate) {
+            let sortedData = rs.content.sort((a, b) => {
+              if (a.lastMsgTime == b.lastMsgTime) {
                 return 0;
-              } else if (a.lastMsgDate > b.lastMsgDate) {
+              } else if (a.lastMsgTime > b.lastMsgTime) {
                 return -1;
               } else {
                 return 1;
               }
             });
+            console.log(sortedData)
             res(sortedData);
+
           }
         } else {
           rej(rs.msg);
@@ -39,6 +42,7 @@ function getTopicList() {
 /**
  * 根据 topic 获取聊天记录
  * @param {String} topicId 主题id
+ * @param firstCreateTime
  */
 function getRecordsByTopicId(topicId, firstCreateTime) {
   return new Promise((res, rej) => {
@@ -80,6 +84,7 @@ function send(msg) {
     if (msg.content.length > 1024) {
       return rej("内容过长!");
     }
+    console.log(msg)
     HttpUtil.post(ApiPaths.chat.send, msg)
       .then((rs) => {
         if (rs.code >= 0) {

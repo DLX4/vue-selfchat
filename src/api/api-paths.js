@@ -11,7 +11,7 @@ let apiPaths = {
     getTopicList: chat_server + "/topic",
     // getChatItemByOpenId: chat_server + "/chat/getChatItemByOpenId",
     getRecordsByTopicId: chat_server + "/message",
-    setRead: chat_server + '/chat/setRead',
+    // setRead: chat_server + '/chat/setRead',
     send: chat_server + "/message",
     // 发送图片消息
     sendImage: chat_server + "/chat/sendImage",

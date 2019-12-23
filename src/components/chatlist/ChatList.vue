@@ -4,8 +4,8 @@
     <ul>
       <li v-for="item in searchedChatlist"
           class="sessionlist"
-          :class="{ active: item.openId === selectId }"
-          @click="selectSession(item.openId)">
+          :class="{ active: item.topicId === selectTopicId }"
+          @click="selectSession(item.topicId)">
         <div class="list-left">
           <el-badge :value="item.unreadNum"
                     :hidden="!item.unreadNum"
@@ -14,15 +14,15 @@
             <img class="avatar"
                  width="42"
                  height="42"
-                 :alt="item.displayName"
+                 :alt="item.name"
                  :class="{gray: !item.reachable}"
                  :src="item.avatar || 'static/images/defaultAvatar.jpeg'">
           </el-badge>
         </div>
         <div class="list-right">
           <p class="name"
-             :title="item.displayName">{{item.displayName}}</p>
-          <span class="time">{{item.lastMsgDate | time}}</span>
+             :title="item.name">{{item.name}}</p>
+          <span class="time">{{item.lastMsgTime | time}}</span>
           <p class="lastmsg"
              v-html="content(item)"></p>
         </div>
@@ -37,13 +37,13 @@ import FormatUtil from "../../utils/format-util.js";
 export default {
   name: "ChatList",
   computed: {
-    ...mapState(["selectId", "searchText", "drafts"]),
+    ...mapState(["selectTopicId", "searchText", "drafts"]),
     ...mapGetters(["searchedChatlist"])
   },
   methods: {
     ...mapActions(["selectSession"]),
     content(item) {
-      let draft = this.drafts[item.openId];
+      let draft = this.drafts[item.id];
       if (draft) {
         return `<span><span style='color: red' title=${draft}>[草稿]</span>
             ${draft}</span>`;
