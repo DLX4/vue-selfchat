@@ -37,24 +37,24 @@
             <img class="avatar"
                  width="36"
                  height="36"
-                 :class="{gray: !allReachable[item.openId] && !isSelf(item.sendType)}"
+                 :class="{gray: false}"
                  :src="isSelf(item.sendType) ? user.avatar : (selectedChat.avatar || 'static/images/defaultAvatar.jpeg')" />
             <div class="content">
               <div class="text"
-                   v-if="item.msgType === 'text'"
+                   v-if="item.msgType === 'TEXT'"
                    v-html="format(item)"></div>
-              <image-msg v-if="item.msgType === 'image'"
+              <image-msg v-if="item.msgType === 'IMAGE'"
                          :msg="item"></image-msg>
               <voice-msg :msg="item"
-                         v-if="item.msgType === 'voice'"></voice-msg>
+                         v-if="item.msgType === 'VOICE'"></voice-msg>
               <video-msg :msg="item"
-                         v-if="item.msgType === 'video' || item.msgType === 'shortvideo'"></video-msg>
+                         v-if="item.msgType === 'VIDEO' || item.msgType === 'SHORTVIDEO'"></video-msg>
               <link-msg :msg="item"
-                        v-if="item.msgType === 'link'"></link-msg>
+                        v-if="item.msgType === 'LINK'"></link-msg>
               <location-msg :msg="item"
-                            v-if="item.msgType === 'location'"></location-msg>
+                            v-if="item.msgType === 'LOCATION'"></location-msg>
               <news-msg :msg="item"
-                        v-if="item.msgType === 'news'"></news-msg>
+                        v-if="item.msgType === 'NEWS'"></news-msg>
             </div>
           </div>
         </li>

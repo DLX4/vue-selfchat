@@ -32,7 +32,7 @@ function getTopicList() {
 
           }
         } else {
-          rej(rs.msg);
+          rej(rs.requestResult.errorMsg);
         }
       })
       .catch(e => rej(e.msg));
@@ -52,8 +52,8 @@ function getRecordsByTopicId(topicId, firstCreateTime) {
     }
     HttpUtil.get(ApiPaths.chat.getRecordsByTopicId + "/" + topicId)
       .then((rs) => {
-        if (rs.code >= 0) {
-          let sortedData = rs.data.sort((a, b) => {
+        if (rs.requestResult) {
+          let sortedData = rs.content.sort((a, b) => {
             if (a.createTime == b.createTime) {
               return 0;
             } else if (a.createTime < b.createTime) {
@@ -65,7 +65,7 @@ function getRecordsByTopicId(topicId, firstCreateTime) {
           CacheUtil.setWithTime(MSG_CACHE_KEY + topicId, sortedData);
           res(sortedData);
         } else {
-          rej(rs.msg)
+          rej(rs.requestResult.errorMsg)
         }
       })
       .catch(e => rej(e.msg));

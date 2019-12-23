@@ -187,6 +187,8 @@ const actions = {
       return;
     }
     ChatApi.getRecordsByTopicId(id).then(msgs => {
+      console.log("history")
+      console.log(msgs)
       commit("setSelectedMsgs", msgs);
     }).catch(e => {
       console.log(e);
