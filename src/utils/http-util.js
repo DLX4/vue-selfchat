@@ -3,7 +3,8 @@ var qs = require("qs");
 
 axios.defaults.withCredentials = true;
 axios.defaults.headers.post["Content-Type"] =
-  "application/x-www-form-urlencoded;charset=UTF-8";
+  "application/json;charset=UTF-8";
+  //"application/x-www-form-urlencoded;charset=UTF-8";
 axios.defaults.headers['X-Requested-With'] = 'XMLHttpRequest';
 
 function get(url, param) {
@@ -28,7 +29,7 @@ function get(url, param) {
 function post(url, params) {
   return new Promise((resolve, reject) => {
     axios
-      .post(url, qs.stringify(params))
+      .post(url, params)
       .then((res) => {
         let data = res.data || {
           code: -99,

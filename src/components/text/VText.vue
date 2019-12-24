@@ -86,7 +86,7 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(["setInputContent"]),
+    ...mapMutations(["setInputContent", "addNewMsg"]),
     chooseImg() {
       let file = document.getElementById("img-file");
       // 清空已选，否则重复选中同一张图片会出问题
@@ -158,16 +158,14 @@ export default {
       } else {
         this.sending = true;
         let msg = {
-          appId: this.selectedChat.appId,
           content: toOriginEmoji(this.content),
-          openId: this.selectTopicId,
-          sendType: "SEND",
-          msgType: "text",
-          date: new Date()
+          topicId: this.selectTopicId,
+          type: "TEXT",
         };
         ChatApi.send(msg)
-          .then(() => {
+          .then((m) => {
             this.content = "";
+            this.addNewMsg(m);
           })
           .catch(e => this.$alert(e || "发送失败，请稍候重试"))
           .finally(() => (this.sending = false));

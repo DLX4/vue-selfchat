@@ -131,7 +131,7 @@ export default {
           this.$alert("加载更多聊天记录失败");
         })
         .finally(() => (this.loading = false));
-      console.log("loadmore");
+        console.log("loadmore");
     },
     isSelf(sendType) {
       return (
@@ -169,6 +169,7 @@ export default {
   },
   filters: {
     time(item) {
+      console.log(item)
       if (!item) {
         return "";
       }

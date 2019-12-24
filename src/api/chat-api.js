@@ -50,7 +50,7 @@ function getRecordsByTopicId(topicId, firstCreateTime) {
     if (cache) {
       return res(cache);
     }
-    HttpUtil.get(ApiPaths.chat.getRecordsByTopicId + "/" + topicId)
+    HttpUtil.get(ApiPaths.chat.getRecordsByTopicId + "/" + topicId, {firstCreateTime: firstCreateTime})
       .then((rs) => {
         if (rs.requestResult) {
           let sortedData = rs.content.sort((a, b) => {
@@ -87,10 +87,10 @@ function send(msg) {
     console.log(msg)
     HttpUtil.post(ApiPaths.chat.send, msg)
       .then((rs) => {
-        if (rs.code >= 0) {
-          res(rs.data);
+        if (rs.requestResult) {
+          res(rs.content);
         } else {
-          rej(rs.msg)
+          rej(rs.requestResult.errorMsg)
         }
       })
       .catch(e => rej(e.msg));
