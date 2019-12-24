@@ -14,7 +14,7 @@ let apiPaths = {
     // setRead: chat_server + '/chat/setRead',
     send: chat_server + "/message",
     // 发送图片消息
-    sendImage: chat_server + "/chat/sendImage",
+    upload: chat_server + "/upload",
   }
 }
 export default apiPaths

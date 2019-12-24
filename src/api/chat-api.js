@@ -102,20 +102,20 @@ function send(msg) {
  * @param {Object} msg 消息体
  */
 function sendImage(appType, appId, openId, file) {
-  // return new Promise((res, rej) => {
-  //   if (file.size > IMAGE_MAX_SIZE) {
-  //     return rej("图片大小不能大于2M");
-  //   }
-  //   HttpUtil.upload(ApiPaths.chat.sendImage + `?appType=${appType}&appId=${appId}&openId=${openId}`, file)
-  //     .then((rs) => {
-  //       if (rs.code >= 0) {
-  //         res(rs.data)
-  //       } else {
-  //         rej(rs.msg)
-  //       }
-  //     })
-  //     .catch(e => rej(e.msg));
-  // });
+  return new Promise((res, rej) => {
+    if (file.size > IMAGE_MAX_SIZE) {
+      return rej("图片大小不能大于2M");
+    }
+    HttpUtil.upload(ApiPaths.chat.upload, file)
+      .then((rs) => {
+        if (rs.code >= 0) {
+          res(rs.data)
+        } else {
+          rej(rs.msg)
+        }
+      })
+      .catch(e => rej(e.msg));
+  });
 }
 
 /**
