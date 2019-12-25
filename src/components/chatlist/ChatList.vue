@@ -15,8 +15,8 @@
                  width="42"
                  height="42"
                  :alt="item.name"
-                 :class="{gray: !item.reachable}"
-                 :src="item.avatar || 'static/images/defaultAvatar.jpeg'">
+                 :class="{gray: false}"
+                 :src="item.avatar || 'static/images/defaultAvatar.jpg'">
           </el-badge>
         </div>
         <div class="list-right">

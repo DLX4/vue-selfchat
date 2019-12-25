@@ -136,9 +136,21 @@ export default {
       this.loading = true;
       // 先上传，获取mediaId
       let chat = this.selectedChat;
-      ChatApi.sendImage(chat.appType, chat.appId, chat.openId, file.files[0])
-        .then(mediaId => {
+      ChatApi.sendImage(file.files[0])
+        .then(image => {
           this.preview = false;
+          let msg = {
+            content: image,
+            topicId: this.selectTopicId,
+            type: "IMAGE",
+          };
+          ChatApi.send(msg)
+            .then((m) => {
+              this.content = "";
+              this.addNewMsg(m);
+            })
+            .catch(e => this.$alert(e || "发送失败，请稍候重试"))
+            .finally(() => (this.sending = false));
         })
         .catch(e => this.$alert(e))
         .finally(() => (this.loading = false));

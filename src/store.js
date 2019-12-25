@@ -33,8 +33,6 @@ const mutations = {
   // 从localStorage 中获取数据
   initData(state, chatlistData) {
     state.chatlist = chatlistData;
-    console.log("===========")
-    console.log(state.chatlist)
   },
   // 当前选中的联系人对应的聊天记录
   setSelectedMsgs(state, msg) {
@@ -173,9 +171,7 @@ const actions = {
     commit,
     dispatch
   }) =>   {
-    console.log("-------------")
     ChatApi.getTopicList().then(list => {
-      console.log(list)
       commit("initData", list);
     })
   },
@@ -187,8 +183,6 @@ const actions = {
       return;
     }
     ChatApi.getRecordsByTopicId(id).then(msgs => {
-      console.log("history")
-      console.log(msgs)
       commit("setSelectedMsgs", msgs);
     }).catch(e => {
       console.log(e);
