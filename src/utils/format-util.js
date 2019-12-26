@@ -1,6 +1,6 @@
 /**
  * 将后端返回的时间转换成页面上友好的格式
- * @param {*} date 
+ * @param {*} date
  */
 function displayTime(date) {
   if (!date) {
@@ -32,7 +32,7 @@ function displayTime(date) {
  */
 function format(date, format) {
   if (!format) {
-    format = "yyyy-MM-dd HH:mm:ss";
+    format = "yyyy-MM-dd HH:mm";
   }
   var o = {
     "M+": date.getMonth() + 1, //month

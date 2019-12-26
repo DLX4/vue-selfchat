@@ -131,6 +131,7 @@ export default {
       white-space: nowrap;
       width: 100%;
       text-overflow: ellipsis;
+      overflow: hidden;
     }
   }
 }

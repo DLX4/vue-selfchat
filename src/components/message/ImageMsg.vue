@@ -1,7 +1,7 @@
 <template>
   <div class="image-msg pointer">
     <!--<p>图片消息(点击预览)</p>-->
-    <img style="max-width: 300px; max-height: 300px"
+    <img style="max-width: 300px; max-height: 300px; border-radius: 3px"
          @click="visible = true"
          :src="msg.picUrl || msg.srcUrl"></img>
     <image-preview :pic-url="msg.picUrl || msg.srcUrl"
