@@ -38,7 +38,7 @@
                  width="36"
                  height="36"
                  :class="{gray: false}"
-                 :src="isSelf(item.sendType) ? user.avatar : (selectedChat.avatar || 'static/images/defaultAvatar.jpeg')" />
+                 :src="isSelf(item.sendType) ? user.avatar : (selectedChat.avatar || 'static/images/defaultAvatar.jpg')" />
             <div class="content">
               <div class="text"
                    v-if="item.msgType === 'TEXT'"
@@ -132,7 +132,6 @@ export default {
           this.$alert("加载更多聊天记录失败");
         })
         .finally(() => (this.loading = false));
-        console.log("loadmore");
     },
     isSelf(sendType) {
       return (
@@ -170,7 +169,6 @@ export default {
   },
   filters: {
     time(item) {
-      console.log(item)
       if (!item) {
         return "";
       }

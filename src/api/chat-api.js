@@ -2,18 +2,16 @@ import HttpUtil from '../utils/http-util';
 import ApiPaths from './api-paths';
 import CacheUtil from '../utils/cache-util';
 const MSG_CACHE_KEY = "msgs:";
-// 图片最大 2M
-const IMAGE_MAX_SIZE = 1 << 21;
+// 图片最大 32M
+const IMAGE_MAX_SIZE = 1 << 26;
 
 /**
  * 获取聊天好友列表
  */
 function getTopicList() {
   return new Promise((res, rej) => {
-    console.log(ApiPaths.chat.getTopicList)
     HttpUtil.get(ApiPaths.chat.getTopicList)
       .then((rs) => {
-        console.log(rs);
         if (rs.requestResult) {
           if (!rs.content.length) {
             res([]);
@@ -27,7 +25,6 @@ function getTopicList() {
                 return 1;
               }
             });
-            console.log(sortedData)
             res(sortedData);
 
           }
@@ -84,7 +81,6 @@ function send(msg) {
     if (msg.content.length > 1024) {
       return rej("内容过长!");
     }
-    console.log(msg)
     HttpUtil.post(ApiPaths.chat.send, msg)
       .then((rs) => {
         if (rs.requestResult) {
@@ -101,17 +97,17 @@ function send(msg) {
  * 发送图片消息
  * @param {Object} msg 消息体
  */
-function sendImage(appType, appId, openId, file) {
+function sendImage(file) {
   return new Promise((res, rej) => {
     if (file.size > IMAGE_MAX_SIZE) {
-      return rej("图片大小不能大于2M");
+      return rej("图片大小不能大于32M");
     }
     HttpUtil.upload(ApiPaths.chat.upload, file)
       .then((rs) => {
-        if (rs.code >= 0) {
-          res(rs.data)
+        if (rs.requestResult) {
+          res(rs.content)
         } else {
-          rej(rs.msg)
+          rej(rs.requestResult.errorMsg)
         }
       })
       .catch(e => rej(e.msg));
