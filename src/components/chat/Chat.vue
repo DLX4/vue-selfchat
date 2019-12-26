@@ -38,14 +38,14 @@ export default {
     VText
   },
   mounted() {
-    this.setReachable(this.reachable);
+    // this.setReachable(this.reachable);
   },
   methods: {
-    ...mapActions(["setReachable"])
+    // ...mapActions(["setReachable"])
   },
   watch: {
     reachable(v) {
-      this.setReachable(v);
+      // this.setReachable(v);
     }
   }
 };

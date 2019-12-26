@@ -6,6 +6,6 @@ var prodEnv = require('./prod.env')
  */
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  CHAT_SERVER: '"127.0.0.1:8013"',
-  MOCK: "true"
+  CHAT_SERVER: '"http://localhost:8089"',
+  MOCK: "false"
 })

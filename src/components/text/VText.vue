@@ -86,7 +86,7 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(["setInputContent"]),
+    ...mapMutations(["setInputContent", "addNewMsg"]),
     chooseImg() {
       let file = document.getElementById("img-file");
       // 清空已选，否则重复选中同一张图片会出问题
@@ -136,9 +136,21 @@ export default {
       this.loading = true;
       // 先上传，获取mediaId
       let chat = this.selectedChat;
-      ChatApi.sendImage(chat.appType, chat.appId, chat.openId, file.files[0])
-        .then(mediaId => {
+      ChatApi.sendImage(file.files[0])
+        .then(image => {
           this.preview = false;
+          let msg = {
+            content: image,
+            topicId: this.selectTopicId,
+            type: "IMAGE",
+          };
+          ChatApi.send(msg)
+            .then((m) => {
+              this.content = "";
+              this.addNewMsg(m);
+            })
+            .catch(e => this.$alert(e || "发送失败，请稍候重试"))
+            .finally(() => (this.sending = false));
         })
         .catch(e => this.$alert(e))
         .finally(() => (this.loading = false));
@@ -158,16 +170,14 @@ export default {
       } else {
         this.sending = true;
         let msg = {
-          appId: this.selectedChat.appId,
           content: toOriginEmoji(this.content),
-          openId: this.selectId,
-          sendType: "SEND",
-          msgType: "text",
-          date: new Date()
+          topicId: this.selectTopicId,
+          type: "TEXT",
         };
         ChatApi.send(msg)
-          .then(() => {
+          .then((m) => {
             this.content = "";
+            this.addNewMsg(m);
           })
           .catch(e => this.$alert(e || "发送失败，请稍候重试"))
           .finally(() => (this.sending = false));
@@ -175,7 +185,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["selectId", "reachable", "online", "inputContent"]),
+    ...mapState(["selectTopicId", "reachable", "online", "inputContent"]),
     ...mapGetters(["selectedChat"]),
     content: {
       get() {
@@ -207,7 +217,7 @@ export default {
   },
   watch: {
     // 在选择其它对话的时候 聚焦输入框
-    selectId() {
+    selectTopicId() {
       setTimeout(() => {
         this.$refs.text.focus();
       }, 0);
