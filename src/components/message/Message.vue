@@ -34,14 +34,15 @@
           <div class="main"
                v-if="!item.isEvent"
                :class="{ self: item.onRight }">
-            <img class="avatar"
-                 width="36"
-                 height="36"
-                 :class="{gray: false}"
-                 :src="isSelf(item.sendType) ? user.avatar : (selectedChat.avatar || 'static/images/defaultAvatar.jpg')" />
+
+            <avatar class="avatar" :username="item.content"
+                    :size="36"
+                    :rounded="false"
+                    color="#fff"
+            ></avatar>
             <div class="content">
               <div class="text"
-                   v-if="item.msgType === 'TEXT'"
+                    v-if="item.msgType === 'TEXT'"
                    v-html="format(item)"></div>
               <image-msg v-if="item.msgType === 'IMAGE'"
                          :msg="item"></image-msg>
@@ -65,6 +66,7 @@
 
 <script>
 import { mapGetters, mapState, mapMutations } from "vuex";
+import Avatar from "vue-avatar";
 import { replaceEmoji } from "../../utils/emoji-util.js";
 const BreathingLamp = () => import("../common/BreathingLamp");
 const VoiceMsg = () => import("./VoiceMsg");
@@ -85,7 +87,8 @@ export default {
     ImageMsg,
     LinkMsg,
     LocationMsg,
-    NewsMsg
+    NewsMsg,
+    Avatar
   },
   data() {
     return { loading: false };

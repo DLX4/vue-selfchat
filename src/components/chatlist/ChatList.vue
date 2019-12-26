@@ -11,12 +11,12 @@
                     :hidden="!item.unreadNum"
                     :max="99"
                     class="item">
-            <img class="avatar"
-                 width="42"
-                 height="42"
-                 :alt="item.name"
-                 :class="{gray: false}"
-                 :src="item.avatar || 'static/images/defaultAvatar.jpg'">
+            <avatar class="avatar" :username="item.name"
+                    :size="42"
+                    :rounded="false"
+                    color="#fff"
+            ></avatar>
+
           </el-badge>
         </div>
         <div class="list-right">
@@ -33,9 +33,13 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
+import Avatar from "vue-avatar";
 import FormatUtil from "../../utils/format-util.js";
 export default {
   name: "ChatList",
+  components: {
+    Avatar
+  },
   computed: {
     ...mapState(["selectTopicId", "searchText", "drafts"]),
     ...mapGetters(["searchedChatlist"])
