@@ -33,7 +33,7 @@
           <div class="time"><span>{{item | time}}</span></div>
           <div class="main"
                v-if="!item.isEvent"
-               :class="{ self: isSelf(item.sendType) }">
+               :class="{ self: item.onRight }">
             <img class="avatar"
                  width="36"
                  height="36"
@@ -109,7 +109,7 @@ export default {
     );
   },
   methods: {
-    ...mapMutations(["loadMoreNewMsg"]),
+    ...mapMutations(["loadMoreNewMsg", "setMsgOnRight"]),
     loadMore(box) {
       let first = this.selectedMsgs[0];
       let firstCreateTime = first && first.createTime;
@@ -120,6 +120,7 @@ export default {
             // 保存加载前的高度
             let scrollHeight = box.scrollHeight;
             this.loadMoreNewMsg(rs);
+            this.setMsgOnRight();
             this.$nextTick(() => {
               // 加载完回到之前滚去的位置上
               box.scrollTop = box.scrollHeight - scrollHeight;
