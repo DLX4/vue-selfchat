@@ -9,10 +9,10 @@
         <el-col :span="6"
                 style="text-align: right">
           <el-row :gutter="0">
-            <el-col :span="1"
-                    :offset="2">
-              <breathing-lamp :color="online?'green':'gray'"></breathing-lamp>
-            </el-col>
+            <!--<el-col :span="1"-->
+                    <!--:offset="2">-->
+              <!--<breathing-lamp :color="online?'green':'gray'"></breathing-lamp>-->
+            <!--</el-col>-->
             <el-col :span="16"
                     :offset="5">
               <div class="friendname"
@@ -68,7 +68,7 @@
 import { mapGetters, mapState, mapMutations } from "vuex";
 import Avatar from "vue-avatar";
 import { replaceEmoji } from "../../utils/emoji-util.js";
-const BreathingLamp = () => import("../common/BreathingLamp");
+// const BreathingLamp = () => import("../common/BreathingLamp");
 const VoiceMsg = () => import("./VoiceMsg");
 const VideoMsg = () => import("./VideoMsg");
 const ImageMsg = () => import("./ImageMsg");
@@ -81,7 +81,6 @@ import ChatApi from "@/api/chat-api";
 export default {
   name: "Message",
   components: {
-    BreathingLamp,
     VoiceMsg,
     VideoMsg,
     ImageMsg,

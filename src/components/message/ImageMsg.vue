@@ -3,30 +3,20 @@
     <!--<p>图片消息(点击预览)</p>-->
     <img style="max-width: 300px; max-height: 300px; border-radius: 3px"
          @click="visible = true"
+         preview="0"
          :src="msg.picUrl || msg.srcUrl"></img>
-    <image-preview :pic-url="msg.picUrl || msg.srcUrl"
-                   :visible="visible"
-                   v-if="msg.picUrl || msg.srcUrl"
-                   @close="visible = false">
-      <span slot="footer">
-        <div style="margin-top: 30px;">
-          <el-button @click="visible = false">关闭</el-button>
-        </div>
-      </span>
-    </image-preview>
+
   </div>
 </template>
 
 <script>
-const ImagePreview = () => import("../common/ImagePreview");
+
 /**
  * 图片类型消息显示
  */
 export default {
-  name: "VideoMsg",
-  components: {
-    ImagePreview
-  },
+  name: "ImageMsg",
+
   props: {
     msg: {
       type: Object,

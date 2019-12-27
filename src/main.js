@@ -5,6 +5,11 @@ import store from './store'
 import '../theme/index.css'
 import './assets/css/global.css'
 import './assets/fonts/iconfont.css'
+
+import preview from 'vue-photo-preview'
+import 'vue-photo-preview/dist/skin.css'
+Vue.use(preview)
+
 import ElementUI from 'element-ui'
 Vue.use(ElementUI);
 Vue.config.productionTip = false

@@ -18,21 +18,6 @@ const router = new Router({
       props: {
         reachable: true
       }
-    },
-    {
-      path: '/unreachable',
-      component: Chat,
-      props: {
-        reachable: false
-      }
-    },
-    {
-      path: '/friend',
-      component: require('@/page/friend/Friend.vue')
-    },
-    {
-      path: '/my',
-      component: require('@/page/resume/Resume.vue')
     }
   ],
   linkActiveClass: 'active'

@@ -1,13 +1,12 @@
 <!-- 最左边的选择框 -->
 <template>
-	<div class="mycard">
+	<div class="sidebar">
 	    <header>
 	    	<img :src="'static/images/defaultAvatar.jpg'" class="avatar">
 	    </header>
 	    <div class="navbar" @click="clearSearch">
 	         <router-link to="/chat" class="icon iconfont icon-msg" ></router-link>
-	         <router-link to="/friend" class="icon iconfont icon-friend"></router-link>
-	         <router-link to="/my" class="icon iconfont icon-collection"></router-link>
+	         <!--<router-link to="/my" class="icon iconfont icon-collection"></router-link>-->
 	    </div>
 	    <footer>
 	        <i class="icon iconfont icon-more"></i>
@@ -33,7 +32,7 @@ export default {
 
 <style lang="stylus" scoped>
 @import '../../assets/fonts/iconfont.css'
-.mycard
+.sidebar
     position: relative
     width: 100%
     height: 100%

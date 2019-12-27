@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="sidebar">
-      <mycard></mycard>
+      <sidebar></sidebar>
     </div>
     <div class="main">
       <router-view></router-view>
@@ -10,12 +10,12 @@
 </template>
 
 <script>
-const mycard = () => import("./components/mycard/Mycard");
+const sidebar = () => import("./components/sidebar/Sidebar");
 import { mapActions, mapGetters } from "vuex";
 
 export default {
   components: {
-    mycard
+    sidebar
   },
   data() {
     return {};
