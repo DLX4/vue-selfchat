@@ -3,18 +3,10 @@ import Vuex from 'vuex'
 import CacheUtil from '@/utils/cache-util';
 Vue.use(Vuex)
 import ChatApi from '@/api/chat-api';
-import WsApi from './api/ws-api';
-// 一个独立的Vue实例，可用于调用ElementUI的某些方法
-let elVue = new Vue();
 
 const state = {
   // 输入的搜索值
   searchText: '',
-  // 当前登录用户
-  user: {
-    name: '客服',
-    avatar: 'static/images/UserAvatar.jpg'
-  },
   reachable: true,
   // 对话好友列表
   chatlist: [],
@@ -30,10 +22,11 @@ const state = {
 }
 
 const mutations = {
-  // 从localStorage 中获取数据
+  // 初始化聊天话题列表
   initData(state, chatlistData) {
     state.chatlist = chatlistData;
   },
+  // 消息显示在左边还是右边
   setMsgOnRight(state) {
     // 初始化消息是左边显示还是右边显示
     let today = new Date();
@@ -76,21 +69,7 @@ const mutations = {
   selectSession(state, value) {
     state.selectTopicId = value;
   },
-  // setReachable(state, v) {
-  //   state.reachable = v;
-  // },
-  // reachableChange(state, msg) {
-  //   console.log("收到用户可达性变更事件", msg);
-  //   let chatItem = state.chatlist.find(c => c.openId === msg.openId);
-  //   if (chatItem) {
-  //     chatItem.reachable = msg.reachable;
-  //   }
-  // },
-  // addNewChatItem(state, item) {
-  //   if (!state.chatlist.find(c => c.openId === item.openId)) {
-  //     state.chatlist.unshift(item);
-  //   }
-  // },
+
   // 给当前会话添加新消息
   addNewMsg(state, msg) {
     if (state.selectTopicId !== msg.topicId) {
@@ -109,36 +88,11 @@ const mutations = {
     state.selectedMsgs.push(msg);
     CacheUtil.setWithTime("msgs:" + state.selectTopicId, state.selectedMsgs);
   },
+
+  // 加载更多消息
   loadMoreNewMsg(state, msgs) {
     // 将新加载的消息加到消息的头部
     state.selectedMsgs.unshift(...msgs);
-  },
-  updateChatItem(state, msg) {
-    // 有新消息时更新列表
-    let index = -1;
-    let item;
-    for (let i = 0; i < state.chatlist.length; i++) {
-      let tmp = state.chatlist[i];
-      if (tmp.topicId === msg.topicId) {
-        index = i;
-        item = tmp;
-        break;
-      }
-    }
-    if (!item) {
-      return;
-    }
-    item.lastMsgContent = msg.content;
-    if (msg.msgType !== "text") {
-      item.lastMsgContent = msg.msgName;;
-    }
-    item.lastMsgTime = msg.createTime;
-    // // 如果不是当前选中的人，则未读数量加一
-    // if (msg.sendType === "REC" && state.selectTopicId !== msg.openId) {
-    //   item.unreadNum++;
-    // }
-    state.chatlist.splice(index, 1);
-    state.chatlist.unshift(item);
   },
   setInputContent(state, c) {
     state.inputContent = c;
@@ -151,9 +105,8 @@ const getters = {
   // 筛选出含有搜索值的聊天列表
   searchedChatlist(state) {
     return state.chatlist.filter(item =>
-      item.name &&
-      // item.reachable == state.reachable &&
-      item.name.includes(state.searchText));
+      (item.name && item.name.includes(state.searchText))
+      || (item.lastMsgContent && item.lastMsgContent.includes(state.searchText)));
   },
   // 通过当前选择是哪个对话匹配相应的对话
   selectedChat(state) {
@@ -173,32 +126,11 @@ const actions = {
     commit
   }, value) => {
     commit('selectSession', value);
-    if (value) {
-      let item = state.chatlist.find(item => item.openId === value);
-      // item && (item.unreadNum = 0);
-      // ChatApi.setRead(value).then(() => {
-      //
-      // }).catch(e => elVue.$alert(e || "置为已读出错"));
-    }
   },
   send: ({
     commit
   }) => commit('send'),
 
-  setDefaultSelect({
-    state,
-    dispatch,
-    commit
-  }) {
-    // 设置默认选中第一个
-    let item = state.chatlist[0];
-    if (item) {
-      dispatch('selectSession', item.topicId)
-    } else {
-      commit("setSelectedMsgs", []);
-      dispatch('selectSession', "");
-    }
-  },
   initData: ({
     commit,
     dispatch

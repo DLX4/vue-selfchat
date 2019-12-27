@@ -61,7 +61,6 @@ function upload(url, file) {
     let param = new FormData();
     //通过append向form对象添加数据
     param.append('file', file, file.name);
-    console.log(param.get('file'));
     let config = {
       headers: {
         'Content-Type': 'multipart/form-data'
