@@ -17,7 +17,7 @@ function getTopicList() {
             res([]);
           } else {
             let sortedData = rs.content.sort((a, b) => {
-              if (a.lastMsgTime == b.lastMsgTime) {
+              if (a.lastMsgTime === b.lastMsgTime) {
                 return 0;
               } else if (a.lastMsgTime > b.lastMsgTime) {
                 return -1;
@@ -51,7 +51,7 @@ function getRecordsByTopicId(topicId, firstCreateTime) {
       .then((rs) => {
         if (rs.requestResult) {
           let sortedData = rs.content.sort((a, b) => {
-            if (a.createTime == b.createTime) {
+            if (a.createTime === b.createTime) {
               return 0;
             } else if (a.createTime < b.createTime) {
               return -1;
@@ -70,7 +70,7 @@ function getRecordsByTopicId(topicId, firstCreateTime) {
 }
 
 /**
- * 发送消息
+ * 发送消息(支持文本  图片)
  * @param {Object} msg 消息体
  */
 function send(msg) {
@@ -94,10 +94,10 @@ function send(msg) {
 }
 
 /**
- * 发送图片消息
- * @param {Object} msg 消息体
+ * 上传图片
+ * @param {Object} file 文件
  */
-function sendImage(file) {
+function upload(file) {
   return new Promise((res, rej) => {
     if (file.size > IMAGE_MAX_SIZE) {
       return rej("图片大小不能大于32M");
@@ -126,6 +126,6 @@ export default {
   getTopicList: getTopicList,
   getRecordsByTopicId: getRecordsByTopicId,
   cleanCache,
-  sendImage,
+  upload,
   send
 }

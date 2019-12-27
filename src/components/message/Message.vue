@@ -33,29 +33,30 @@
           <div class="time"><span>{{item | time}}</span></div>
           <div class="main"
                v-if="!item.isEvent"
-               :class="{ self: isSelf(item.sendType) }">
-            <img class="avatar"
-                 width="36"
-                 height="36"
-                 :class="{gray: false}"
-                 :src="isSelf(item.sendType) ? user.avatar : (selectedChat.avatar || 'static/images/defaultAvatar.jpg')" />
-            <div class="content">
+               :class="{ self: item.onRight }">
+
+            <avatar class="avatar" :username="item.content"
+                    :size="36"
+                    :rounded="false"
+                    color="#fff"
+            ></avatar>
+            <div v-if="item.msgType === 'TEXT'" class="content">
               <div class="text"
-                   v-if="item.msgType === 'TEXT'"
                    v-html="format(item)"></div>
-              <image-msg v-if="item.msgType === 'IMAGE'"
-                         :msg="item"></image-msg>
-              <voice-msg :msg="item"
-                         v-if="item.msgType === 'VOICE'"></voice-msg>
-              <video-msg :msg="item"
-                         v-if="item.msgType === 'VIDEO' || item.msgType === 'SHORTVIDEO'"></video-msg>
-              <link-msg :msg="item"
-                        v-if="item.msgType === 'LINK'"></link-msg>
-              <location-msg :msg="item"
-                            v-if="item.msgType === 'LOCATION'"></location-msg>
-              <news-msg :msg="item"
-                        v-if="item.msgType === 'NEWS'"></news-msg>
             </div>
+
+            <image-msg v-if="item.msgType === 'IMAGE'"
+                       :msg="item"></image-msg>
+            <voice-msg :msg="item"
+                       v-if="item.msgType === 'VOICE'"></voice-msg>
+            <video-msg :msg="item"
+                       v-if="item.msgType === 'VIDEO' || item.msgType === 'SHORTVIDEO'"></video-msg>
+            <link-msg :msg="item"
+                      v-if="item.msgType === 'LINK'"></link-msg>
+            <location-msg :msg="item"
+                          v-if="item.msgType === 'LOCATION'"></location-msg>
+            <news-msg :msg="item"
+                      v-if="item.msgType === 'NEWS'"></news-msg>
           </div>
         </li>
       </ul>
@@ -65,6 +66,7 @@
 
 <script>
 import { mapGetters, mapState, mapMutations } from "vuex";
+import Avatar from "vue-avatar";
 import { replaceEmoji } from "../../utils/emoji-util.js";
 const BreathingLamp = () => import("../common/BreathingLamp");
 const VoiceMsg = () => import("./VoiceMsg");
@@ -85,7 +87,8 @@ export default {
     ImageMsg,
     LinkMsg,
     LocationMsg,
-    NewsMsg
+    NewsMsg,
+    Avatar
   },
   data() {
     return { loading: false };
@@ -109,7 +112,7 @@ export default {
     );
   },
   methods: {
-    ...mapMutations(["loadMoreNewMsg"]),
+    ...mapMutations(["loadMoreNewMsg", "setMsgOnRight"]),
     loadMore(box) {
       let first = this.selectedMsgs[0];
       let firstCreateTime = first && first.createTime;
@@ -120,6 +123,7 @@ export default {
             // 保存加载前的高度
             let scrollHeight = box.scrollHeight;
             this.loadMoreNewMsg(rs);
+            this.setMsgOnRight();
             this.$nextTick(() => {
               // 加载完回到之前滚去的位置上
               box.scrollTop = box.scrollHeight - scrollHeight;
@@ -180,11 +184,19 @@ export default {
       } else if (typeof item.createTime === "string") {
         date = new Date(item.createTime);
       }
-      if (!item.isEvent) {
+      // 当天的只显示小时分钟
+      if (date.toDateString() === new Date().toDateString()) {
+        if(date.getMinutes() <10 ){
+          return date.getHours() + ':0' +date.getMinutes();
+        } else {
+          return date.getHours() + ':' + date.getMinutes();
+        }
+      }
+      // 非当天的显示年月日小时分钟
+      else {
         return FormatUtil.format(date);
       }
-      // 如果是事件则显示为 时间+事件名
-      return `${FormatUtil.format(date)} ${item.msgName}`;
+
     }
   }
 };
@@ -192,11 +204,12 @@ export default {
 
 <style lang="stylus" scoped>
 .message {
+  width: 100%;
   height: 450px;
 
   .header {
-    height: 42px;
-    padding: 15px 0 0 30px;
+    height: 60px;
+    padding: 28px 0 0 30px;
     box-sizing: border-box;
     border-bottom: 1px solid #e7e7e7;
 
@@ -206,8 +219,9 @@ export default {
   }
 
   .message-wrapper {
-    height: 410px;
-    padding: 0px 15px;
+    min-height: 390px;
+    max-height: 390px;
+    padding: 10px 15px;
     box-sizing: border-box;
     overflow-y: auto;
     border-bottom: 1px solid #e7e7e7;
@@ -234,13 +248,12 @@ export default {
     .main {
       .avatar {
         float: left;
-        margin-left: 15px;
+        margin: 0 15px;
         border-radius: 3px;
       }
 
       .content {
         display: inline-block;
-        margin-left: 10px;
         position: relative;
         padding: 6px 10px;
         max-width: 330px;

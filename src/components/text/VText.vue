@@ -136,7 +136,7 @@ export default {
       this.loading = true;
       // 先上传，获取mediaId
       let chat = this.selectedChat;
-      ChatApi.sendImage(file.files[0])
+      ChatApi.upload(file.files[0])
         .then(image => {
           this.preview = false;
           let msg = {
