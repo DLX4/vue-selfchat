@@ -3,7 +3,6 @@
 项目实现了：按照聊天记录形式记录对某个领域的思考、积累，为独立思考人士提供idea记录功能，为输出总结人士提供素材管理功能。
 
 # 效果
-正在使用中：http://106.54.113.128/selfchat/
 ![demo](https://dlx-export.oss-cn-hangzhou.aliyuncs.com/660257564579069952_%E6%8D%95%E8%8E%B7.PNG)
 
 # 技术栈
